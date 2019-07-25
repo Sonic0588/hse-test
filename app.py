@@ -1,40 +1,19 @@
-import csv
-import psycopg2
-import pandas as pd
-from sqlalchemy import create_engine, MetaData, Table, select
+from flask import Flask, render_template, request
+import db
 
-engine = create_engine("postgresql+psycopg2://hseuser:hsepass@localhost/hsetest")
-conn = engine.connect()
+app = Flask(__name__)
 
-data = pd.read_csv('test_csv.csv')
-print(MetaData(conn))
-data.to_sql('test_csv', con = engine, if_exists = 'append')
+@app.route("/")
+def hello():
+    return render_template('index.html')
+
+@app.route("/upload", methods = ['POST'])
+def upload():
+	file = request.files
+	print(file)
+	# file_name, data = db.parse_file(file)
+	# return file_name
 
 
-
-
-
-# titles = str(data.dtypes).lower().split()
-# #print(titles)
-
-# for id in range(len(titles)):
-# 	if titles[id] == 'object':
-# 		titles[id] = 'TEXT,'
-# 	elif 'int' in titles[id]:
-# 		titles[id] = 'INT,'
-# 	elif 'float' in titles[id]:
-# 		titles[id] = 'FLOAT,'
-
-# titles = ' '.join(titles[:-2]).split(',')
-# titles = titles[:-1]
-
-# query = '''CREATE TABLE test_csv({0})'''.format(','.join(titles))
-# cursor.execute(query)
-
-# conn.commit()
-
-# with open('test_csv.csv', 'r') as f:
-# 	next(f)
-# 	cursor.copy_from(f, 'test_csv', sep = ',')
-
-# conn.commit()
+if __name__ == "__main__":
+    app.run(debug = True)
