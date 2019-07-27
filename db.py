@@ -2,14 +2,15 @@ import xlrd
 import csv
 import psycopg2
 import pandas as pd
-from sqlalchemy import create_engine, MetaData, Table, select
+from sqlalchemy import create_engine
 
-def parse_file(file):
+def parse_file(file, names, header_row):
 	file_name = file.filename.split('.')[0]
 	file_exten = file.filename.split('.')[1]
 
 	# определение расширения файла csv или xls
 	if file_exten == 'csv':
+
 		# выделение первой строки в файле
 		header = file.readline().decode('utf-8')
 		file.seek(0)
@@ -18,7 +19,8 @@ def parse_file(file):
 		sniffer = csv.Sniffer()
 		dialect = sniffer.sniff(header)
 
-		data = pd.read_csv(file, sep = dialect.delimiter.strip())
+		# парсинг csv в DataFrame
+		data = pd.read_csv(file, sep = dialect.delimiter.strip(), names = names, header = header_row)
 		return file_name, data
 
 	elif file_exten == 'xlsx':
